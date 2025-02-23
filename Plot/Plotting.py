@@ -261,8 +261,7 @@ def plot_battery_soc(**modelVals_dict):
     Each value is a dictionary with:
         modelVals["B"] : { (time, node) -> SOC_value }
 
-    For example, original code references lines at 1500*0.95 and 1500*0.3,
-    so we add horizontal lines at those values.
+    Adds horizontal lines at minimum and maximum soc permissible.
     """
     data = []
     for scenario_key, scenario_data in modelVals_dict.items():
@@ -298,7 +297,7 @@ def plot_battery_soc(**modelVals_dict):
         yaxis_title="Energy (KWh)"
     )
 
-    # Add horizontal lines at 1500*0.95 and 1500*0.3 (example from original code)
+    # Add horizontal lines
     fig.add_hline(y=500 * 4 * 0.95, line_color='red')
     fig.add_hline(y=500 * 4 * 0.3, line_color='red')
 
