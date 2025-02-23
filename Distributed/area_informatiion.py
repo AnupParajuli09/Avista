@@ -1,4 +1,11 @@
+"""
+   This script gives information about spatial decomposition of original system into n-smaller subsystems used
+   for distributed optimization. It gives information about the parent and child areas and the nodes that connect
+   each areas. Global Nodes are already present in the original system and local nodes are introduced for each
+   sub-systems connecting tie-lines to solve the distributed optimization
+"""
 ## area separation into 4 areas
+
 avista_sys_area_info = {
     'area1': {
         # Area connection information
