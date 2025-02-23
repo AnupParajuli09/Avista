@@ -1,7 +1,7 @@
 # %% Importing all the required Modules
 from Parser.parse import parse_all_data
 from Build_Model.Constraints import build_pyomo_model
-from Build_Model.Objective import substation_power_minimize,substation_power_minimize_with_discharge_cost,cost_minimize,cost_minimize_with_discharging_cost,pyomo_solve,power_flow
+from Build_Model.Objective import cost_minimize,cost_minimize_with_discharging_cost,pyomo_solve ## Similarly others can also be imported with their name
 from Build_Model.store import store_results
 from Plot.Plotting import *
 import pandas as pd
@@ -12,7 +12,7 @@ from Distributed.enapp import solve_EnAPP
 
 system_name = 'avista_sys' ## System name
 area_info = eval(f'{system_name}' + '_area_info') ## Gives Information about the area interconnection
-obj = cost_minimize_with_discharging_cost  ## Objective function to be used
+obj = cost_minimize  ## Objective function to be used
 
 wd = os.getcwd()
 filepath = os.path.join(wd, "rawData", system_name,"csvs") ## Connects to the path of all csvs corresponding to system name
@@ -41,12 +41,13 @@ if __name__ == "__main__":
         centralized_model = build_pyomo_model(data)
         centralized_model = pyomo_solve(centralized_model,obj)
         copfVals = store_results(centralized_model)
-        print(f"Centralized Objective Value: {copfVals['objective_value']}")
+        print(f"COPF Objective Value:{copfVals['objective_value']}")
 
     if ADMM:
         print("Solving ADMM ...")
         data_area = split_data_into_areas(data, area_info)
         admmVals,admm_obj,admm_aug_obj,admm_conv = solve_ADMM(data, data_area, area_info, obj, rho=5e-5, max_iterations=500)
+        print(f"ADMM Objective Value:{admm_obj}")
         print("ADMM ran successfully")
 
 
@@ -54,12 +55,8 @@ if __name__ == "__main__":
         print("Solving EnAPP ...")
         data_area = split_data_into_areas(data, area_info)
         enappVals, enapp_obj,enapp_conv = solve_EnAPP(data, data_area, area_info, obj, max_iterations=50)
+        print(f"Enapp Objective Value:{enapp_obj}")
         print("EnAPP ran successfully")
-
-    print(f"COPF Objective Value:{copfVals['objective_value']}")
-    print(f"ADMM Objective Value:{admm_obj}")
-    print(f"Enapp Objective Value:{enapp_obj}")
-
 
     plot_substation_power(copfVals=copfVals,admmVals=admmVals,enappVals=enappVals)
     plot_battery_charging_discharging_combined(copfVals=copfVals,admmVals=admmVals,enappVals=enappVals)
