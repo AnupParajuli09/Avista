@@ -1,4 +1,6 @@
-
+"""
+This script does the distributed optimization using EnAPP Approach.
+"""
 import multiprocessing as mp
 from Build_Model.Objective import cost_minimize_with_discharging_cost,cost_minimize,substation_power_minimize_with_discharge_cost,substation_power_minimize,pyomo_solve
 from Build_Model.Constraints import build_pyomo_model

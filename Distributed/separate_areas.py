@@ -1,12 +1,13 @@
-########################################
-
-# Complete script using only the data dictionary
-########################################
+"""
+This script does the spatial decomposition of a system to n-smaller sub systems based on area_information.py script
+and creates data dictionaries of  each sub systems to hold all of its own area specific infornmation like Nodes, Lines,
+Bset, Eset and so on.
+"""
 
 import networkx as nx
 
 ###########################
-# 3) Build the graph from data
+# 1) Build the graph from data
 ###########################
 def build_graph_from_data(full_data):
     """
@@ -24,7 +25,7 @@ def build_graph_from_data(full_data):
     return g
 
 ###########################
-# 4) Remove cross-area edges and insert dummy nodes
+# 2) Remove cross-area edges and insert dummy nodes
 ###########################
 def remove_inter_area_edges(g, area_info):
     for area in area_info.keys():
@@ -47,7 +48,7 @@ def remove_inter_area_edges(g, area_info):
 
 
 ###########################
-# 6) Build sub-area data
+# 3) Build sub-area data
 ###########################
 def build_area_data(full_data, area_name, sg_local):
 
@@ -59,7 +60,6 @@ def build_area_data(full_data, area_name, sg_local):
     Eset_area = [edo_id for edo_id in full_data["Eset"] if edo_id in Nset_area]
     Bset_area = [bat_id for bat_id in full_data["Bset"] if bat_id in Nset_area]
 
-    # Filter p_L, q_L, etc., keeping only those in Nset_area
     p_L_area = {
         key: full_data["p_L"][key]
         for key in full_data["p_L"]
@@ -128,22 +128,21 @@ def build_area_data(full_data, area_name, sg_local):
     return data_area
 
 ###########################
-# 7) Main function
+# 4) Main function
 ###########################
 def split_data_into_areas(full_data,area_info):
     # ----------------------------
-    # Step 2: Build the graph from data
+    # Step 1: Build the graph from data
     # ----------------------------
     g = build_graph_from_data(full_data)
 
     # ----------------------------
-    # Step 3: Remove cross-area edges and insert dummy nodes with half impedances
+    # Step 2: Remove cross-area edges and insert dummy nodes with half impedances
     # ----------------------------
     g= remove_inter_area_edges(g, area_info)
 
-
     # ----------------------------
-    # Step 5: Identify subgraphs
+    # Step 3: Identify subgraphs
     # ----------------------------
     subgraphs = [g.subgraph(c).copy() for c in nx.weakly_connected_components(g)]
 
@@ -158,7 +157,7 @@ def split_data_into_areas(full_data,area_info):
             print(f"Warning: No subgraph found containing root node {root_node} for area {area_name}.")
 
     # ----------------------------
-    # Step 6: Build area-level data dictionaries
+    # Step 4: Build area-level data dictionaries
     # ----------------------------
     data_by_area = {}
     for area_name, sg_local in area_subgraphs.items():
